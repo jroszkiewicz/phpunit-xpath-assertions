@@ -1,3 +1,10 @@
+3.0.0
+-----
+
+* Dropped PHP 7.1 && 7.2 support
+* Dropped PHPUnit 7.* support
+* Added support for PHPUnit 9.*
+
 1.1.0
 -----
 

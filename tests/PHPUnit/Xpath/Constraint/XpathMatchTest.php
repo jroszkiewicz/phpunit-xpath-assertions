@@ -7,27 +7,23 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Xpath\Constraint;
+namespace Tests\PHPUnit\Xpath\Constraint;
 
-require_once __DIR__ . '/../TestCase.php';
-
-use PHPUnit\Xpath\TestCase;
+use PHPUnit\Xpath\Constraint\XpathMatch;
+use Tests\PHPUnit\Xpath\TestCase;
 
 class XpathMatchTest extends TestCase
 {
     /**
      * @dataProvider provideMatchingExpressions
-     *
-     * @param string $expression
-     * @param array  $namespaces
      */
-    public function testXpathMatchExpectTrue(string $expression, array $namespaces = [])
+    public function testXpathMatchExpectTrue(string $expression, array $namespaces = []): void
     {
         $constraint = new XpathMatch($expression, $namespaces);
         $this->assertTrue($constraint->evaluate($this->getXMLDocument(), '', true));
     }
 
-    public function provideMatchingExpressions()
+    public function provideMatchingExpressions(): array
     {
         return [
            ['/root'],
@@ -40,17 +36,14 @@ class XpathMatchTest extends TestCase
     }
     /**
      * @dataProvider provideNonMatchingExpressions
-     *
-     * @param string $expression
-     * @param array  $namespaces
      */
-    public function testXpathMatchExpectFalse(string $expression, array $namespaces = [])
+    public function testXpathMatchExpectFalse(string $expression, array $namespaces = []): void
     {
         $constraint = new XpathMatch($expression, $namespaces);
         $this->assertFalse($constraint->evaluate($this->getXMLDocument(), '', true));
     }
 
-    public function provideNonMatchingExpressions()
+    public function provideNonMatchingExpressions(): array
     {
         return [
             ['/child'],

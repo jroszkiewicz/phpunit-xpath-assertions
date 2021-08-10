@@ -9,9 +9,17 @@
  */
 namespace PHPUnit\Xpath\Constraint;
 
+use DOMDocument;
+use DOMNode;
+use DOMNodeList;
+use DOMXPath;
+use InvalidArgumentException;
+use JsonSerializable;
 use PHPUnit\Framework\Constraint\Constraint as PHPUnitConstraint;
-use PHPUnit\Util\InvalidArgumentHelper;
 use PHPUnit\Xpath\Import\JsonToXml;
+use PHPUnit\Xpath\Helper\InvalidArgumentHelper;
+use stdClass;
+use function is_array;
 
 /**
  * Constraint superclass for constraints that uses Xpath expressions
@@ -30,15 +38,8 @@ abstract class Xpath extends PHPUnitConstraint
      */
     private $_namespaces;
 
-    /**
-     * @param string $expression
-     * @param array  $namespaces
-     */
-    public function __construct($expression, array $namespaces = [])
+    public function __construct(string $expression, array $namespaces = [])
     {
-        if (method_exists(PHPUnitConstraint::class, '__construct')) {
-            parent::__construct();
-        }
         $this->_expression = $expression;
         $this->_namespaces = $namespaces;
     }
@@ -49,20 +50,21 @@ abstract class Xpath extends PHPUnitConstraint
      *
      * @param mixed $context
      *
-     * @return \DOMNodeList|bool|string|float
+     * @return DOMNodeList|bool|string|float
      */
     protected function evaluateXpathAgainst($context)
     {
-        if ($context instanceof \DOMNode) {
-            $document = $context instanceof \DOMDocument ? $context : $context->ownerDocument;
+        if ($context instanceof DOMNode) {
+            $document = $context instanceof DOMDocument ? $context : $context->ownerDocument;
         } else {
             $importer = new JsonToXml($context);
             $document = $importer->getDocument();
             $context  = $document->documentElement;
         }
 
-        $xpath = new \DOMXPath($document);
-        foreach ($this->_namespaces as $prefix=>$namespaceURI) {
+        $xpath = new DOMXPath($document);
+    
+        foreach ($this->_namespaces as $prefix => $namespaceURI) {
             $xpath->registerNamespace($prefix, $namespaceURI);
         }
 
@@ -73,16 +75,16 @@ abstract class Xpath extends PHPUnitConstraint
      * @param mixed $context
      * @param int   $argument
      *
-     * @throws \PHPUnit\Framework\Exception
+     * @throws InvalidArgumentException
      */
-    public static function isValidContext($context, int $argument)
+    public static function isValidContext($context, int $argument): void
     {
         if (
         !(
-            $context instanceof \DOMNode ||
-            \is_array($context) ||
-            $context instanceof \stdClass ||
-            $context instanceof \JsonSerializable
+            $context instanceof DOMNode ||
+            is_array($context) ||
+            $context instanceof stdClass ||
+            $context instanceof JsonSerializable
         )
         ) {
             throw InvalidArgumentHelper::factory(

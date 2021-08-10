@@ -1,11 +1,10 @@
 # phpunit-xpath-assertions
 
-[![Build Status](https://img.shields.io/travis/ThomasWeinert/phpunit-xpath-assertions.svg)](https://travis-ci.org/ThomasWeinert/phpunit-xpath-assertions)
+[![Build Status](https://img.shields.io/travis/jroszkiewicz/phpunit-xpath-assertions.svg)](https://travis-ci.com/jroszkiewicz/phpunit-xpath-assertions)
 
-[![License](https://img.shields.io/packagist/l/thomasweinert/phpunit-xpath-assertions.svg)](https://github.com/thomasweinert/phpunit-xpath-assertions/blob/master/LICENSE)
-[![Total Downloads](https://img.shields.io/packagist/dt/thomasweinert/phpunit-xpath-assertions.svg)](https://packagist.org/packages/thomasweinert/phpunit-xpath-assertions)
-[![Latest Stable Version](https://img.shields.io/packagist/v/thomasweinert/phpunit-xpath-assertions.svg)](https://packagist.org/packages/thomasweinert/phpunit-xpath-assertions)
-[![Latest Unstable Version](https://img.shields.io/packagist/vpre/thomasweinert/phpunit-xpath-assertions.svg)](https://packagist.org/packages/thomasweinert/phpunit-xpath-assertions)
+[![License](https://img.shields.io/packagist/l/jroszkiewicz/phpunit-xpath-assertions.svg)](https://github.com/jroszkiewicz/phpunit-xpath-assertions/blob/master/LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/jroszkiewicz/phpunit-xpath-assertions.svg)](https://packagist.org/packages/jroszkiewicz/phpunit-xpath-assertions)
+[![Latest Stable Version](https://img.shields.io/packagist/v/jroszkiewicz/phpunit-xpath-assertions.svg)](https://packagist.org/packages/jroszkiewicz/phpunit-xpath-assertions)
 
 Xpath assertions and constraints for use with PHPUnit. 
 
@@ -39,26 +38,10 @@ class MyProjectExampleTest extends TestCase
 
 ## Installation
 
-### Phar
-
-If you're using PHPUnit as a PHAR, you can download this extension as PHAR, too. They the are available on the 
-[release page](https://github.com/ThomasWeinert/phpunit-xpath-assertions/releases). Download the extension `*.phar` file
-into a directory and provide the directory in the PHPUnit configuration file.
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/6.3/phpunit.xsd"
-         extensionsDirectory="tools/phpunit.d">
-</phpunit>
-```
-
-### Composer
-
-If you use [Composer](https://getcomposer.org/) to manage the dependencies of your project then you can add the PHPUnit example extension as a development-time dependency to your project:
+Use [Composer](https://getcomposer.org/) to manage the dependencies of your project then you can add the PHPUnit example extension as a development-time dependency to your project:
 
 ```
-$ composer require --dev thomasweinert/phpunit-xpath-assertions
+$ composer require --dev jroszkiewicz/phpunit-xpath-assertions
 ```
 
 ## Usage
@@ -225,15 +208,3 @@ public function testHomePhoneNumbersEqualsExpected()
 # Contributing
 
 Contributions are welcome, please use the issue tracker to report bug and feature ideas.
-
-## Build a modified phar
-
-This project uses Phive and Composer. It includes build scripts to create
-your own phar file. Use Git to checkout the repository and run `phive install` in the project directory
-this will install the necessary tools into the `tools` subdirectory. To create a phar call
-`tools\phing`.
-
-### Build a signed phar
-
-To create a signed phar copy the `dist.build.properties` to `build.properties` and
-set the `gpg.user`. After that call `tools\phing package`. 

@@ -7,10 +7,9 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Xpath;
+namespace Tests\PHPUnit\Xpath;
 
-require_once __DIR__ . '/../vendor/autoload.php';
-
+use DOMDocument;
 use PHPUnit\Framework\TestCase as PHPUnitTestCase;
 
 class TestCase extends PHPUnitTestCase
@@ -22,9 +21,9 @@ class TestCase extends PHPUnitTestCase
             <ns1:child xmlns:ns1="urn:dummy">Three</ns1:child>
         </root>';
 
-    public function getXMLDocument($xml = self::XML)
+    public function getXMLDocument($xml = self::XML): DOMDocument
     {
-        $document                     = new \DOMDocument();
+        $document                     = new DOMDocument();
         $document->preserveWhiteSpace = false;
         $document->loadXML($xml);
 
