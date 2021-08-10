@@ -7,26 +7,30 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Xpath\Import;
+namespace Tests\PHPUnit\Xpath\Import;
 
-require_once __DIR__ . '/../TestCase.php';
-
-use PHPUnit\Xpath\TestCase;
+use InvalidArgumentException;
+use function json_decode;
+use JsonSerializable;
+use PHPUnit\Xpath\Import\JsonToXml;
+use stdClass;
+use Tests\PHPUnit\Xpath\TestCase;
 
 class JsonToXmlTest extends TestCase
 {
     /**
-     * @param string                            $xml
-     * @param \stdClass|array|\JsonSerializable $json
+     * @param string                          $xml
+     * @param stdClass|array|JsonSerializable $json
+     *
      * @dataProvider provideJsonToXmlPairs
      */
-    public function testImport(string $xml, $json)
+    public function testImport(string $xml, $json): void
     {
-        $import = new JsonToXml(\json_decode($json));
+        $import = new JsonToXml(json_decode($json));
         $this->assertXmlStringEqualsXmlString($xml, $import->getDocument()->saveXML());
     }
 
-    public static function provideJsonToXmlPairs()
+    public static function provideJsonToXmlPairs(): array
     {
         return [
             'string' => [
@@ -69,14 +73,15 @@ class JsonToXmlTest extends TestCase
         ];
     }
 
-    public function testImportWithInvalidSourceExpectingException()
+    public function testImportWithInvalidSourceExpectingException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Invalid $json source.');
+        
         new JsonToXml('INVALID');
     }
 
-    public function testImportWithJsonSerialzable()
+    public function testImportWithJsonSerialzable(): void
     {
         $data = new JsonSerializable_Example(
             [
@@ -94,7 +99,7 @@ class JsonToXmlTest extends TestCase
         );
     }
 
-    public function testImportWithRecursionLimit()
+    public function testImportWithRecursionLimit(): void
     {
         $data = new JsonSerializable_Example(
             [
@@ -110,6 +115,7 @@ class JsonToXmlTest extends TestCase
                 ]
             ]
         );
+        
         $import = new JsonToXml($data, 2);
         $this->assertXmlStringEqualsXmlString(
             '<_ type="object">' .
@@ -124,7 +130,7 @@ class JsonToXmlTest extends TestCase
     }
 }
 
-class JsonSerializable_Example implements \JsonSerializable
+class JsonSerializable_Example implements JsonSerializable
 {
     private $_data;
 

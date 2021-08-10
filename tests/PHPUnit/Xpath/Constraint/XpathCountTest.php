@@ -7,15 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace PHPUnit\Xpath\Constraint;
+namespace Tests\PHPUnit\Xpath\Constraint;
 
-require_once __DIR__ . '/../TestCase.php';
-
-use PHPUnit\Xpath\TestCase;
+use PHPUnit\Xpath\Constraint\XpathCount;
+use Tests\PHPUnit\Xpath\TestCase;
 
 class XpathCountTest extends TestCase
 {
-    public function testXpathCountExpectingTrue()
+    public function testXpathCountExpectingTrue(): void
     {
         $constraint = new XpathCount(1, '//child');
         $this->assertTrue(
@@ -23,7 +22,7 @@ class XpathCountTest extends TestCase
         );
     }
 
-    public function testXpathCountWithNamespaceExpectingTrue()
+    public function testXpathCountWithNamespaceExpectingTrue(): void
     {
         $constraint = new XpathCount(2, '//d:child', ['d' => 'urn:dummy']);
         $this->assertTrue(
@@ -31,7 +30,7 @@ class XpathCountTest extends TestCase
         );
     }
 
-    public function testXpathCountExpectingFalse()
+    public function testXpathCountExpectingFalse(): void
     {
         $constraint = new XpathCount(23, '//child');
         $this->assertFalse(
@@ -39,7 +38,7 @@ class XpathCountTest extends TestCase
         );
     }
 
-    public function testXpathCountCastToStringReturnsMessageWithCount()
+    public function testXpathCountCastToStringReturnsMessageWithCount(): void
     {
         $constraint = new XpathCount(1, '//child');
         $this->assertSame(

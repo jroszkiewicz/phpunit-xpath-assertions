@@ -1,14 +1,17 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Xpath\Constraint;
+
 require_once __DIR__.'/../vendor/autoload.php';
 
-class MyProjectExampleTest extends \PHPUnit\Framework\TestCase
+class MyProjectExampleTest extends TestCase
 {
-    use \PHPUnit\Xpath\Constraint;
+    use Constraint;
 
     public function testChildElementExistsInDocument()
     {
-        $document = new \DOMDocument();
+        $document = new DOMDocument();
         $document->loadXML('<root><child>TEXT</child></root>');
 
         self::assertThat(
@@ -19,7 +22,7 @@ class MyProjectExampleTest extends \PHPUnit\Framework\TestCase
 
     public function testChildElementExistsOnTimeInDocument()
     {
-        $document = new \DOMDocument();
+        $document = new DOMDocument();
         $document->loadXML('<root><child>TEXT</child></root>');
 
         self::assertThat(
@@ -30,7 +33,7 @@ class MyProjectExampleTest extends \PHPUnit\Framework\TestCase
 
     public function testChildWithNamespaceElementExistsTwoTimesInDocument()
     {
-        $document = new \DOMDocument();
+        $document = new DOMDocument();
         $document->loadXML(
             '<example:root xmlns:example="urn:example">
             <example:child>TEXT</example:child>
@@ -46,7 +49,7 @@ class MyProjectExampleTest extends \PHPUnit\Framework\TestCase
 
     public function testCompareChildElementFromDocument()
     {
-        $document = new \DOMDocument();
+        $document = new DOMDocument();
         $document->loadXML('<root><child>TEXT</child></root>');
 
         self::assertThat(

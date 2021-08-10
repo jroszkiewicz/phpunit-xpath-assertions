@@ -1,5 +1,5 @@
 {
-    "name": "thomasweinert/phpunit-xpath-assertions",
+    "name": "jroszkiewicz/phpunit-xpath-assertions",
     "description": "Xpath assertions and constraints for PHPUnit",
     "license": "BSD-3-Clause",
     "authors": [
@@ -7,18 +7,28 @@
             "name": "Thomas Weinert",
             "email": "thomas@weinert.info",
             "role": "Developer"
+        },
+        {
+            "name": "Jakub Roszkiewicz",
+            "email": "roszkiewicz.jakub@gmail.com",
+            "role": "Developer"
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.3|^8.0",
         "ext-dom": "*",
         "ext-json": "*",
-        "phpunit/phpunit": "^7.0 || ^8.0"
+        "phpunit/phpunit": "^8.0 || ^9.0"
     },
     "autoload": {
         "classmap": [
             "src/"
         ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
     }
 }
 

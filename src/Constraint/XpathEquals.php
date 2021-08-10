@@ -7,14 +7,24 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Xpath\Constraint;
 
+use DOMDocument;
+use DOMNode;
+use DOMNodeList;
 use PHPUnit\Framework\Constraint\IsEqual;
 use PHPUnit\Framework\Constraint\IsFalse;
 use PHPUnit\Framework\Constraint\IsTrue;
 use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Xpath\Import\JsonToXml;
 use SebastianBergmann\Comparator\ComparisonFailure;
+use Traversable;
+use function is_array;
+use function is_bool;
+use function is_scalar;
+use function is_string;
+use function trim;
 
 /**
  * Constraint that asserts that the result of an Xpath
@@ -29,6 +39,7 @@ class XpathEquals extends Xpath
     public function __construct($value, string $expression, array $namespaces = [])
     {
         parent::__construct($expression, $namespaces);
+        
         $this->_value = $value;
     }
 
@@ -37,16 +48,15 @@ class XpathEquals extends Xpath
      * @param string $description
      * @param bool   $returnResult
      *
-     * @return bool
-     *
-     * @throws \PHPUnit\Framework\ExpectationFailedException
+     * @throws ExpectationFailedException
      */
-    public function evaluate($other, $description = '', $returnResult = false)
+    public function evaluate($other, string $description = '', bool $returnResult = false): ?bool
     {
         $actual = $this->evaluateXpathAgainst($other);
+        
         try {
-            if (\is_scalar($actual)) {
-                if (\is_bool($actual)) {
+            if (is_scalar($actual)) {
+                if (is_bool($actual)) {
                     $constraint = $this->_value ? new IsTrue() : new IsFalse();
                 } else {
                     $constraint = new IsEqual($this->_value);
@@ -54,12 +64,14 @@ class XpathEquals extends Xpath
 
                 return $constraint->evaluate($actual, $description, $returnResult);
             }
-            if (\is_string($this->_value)) {
+            
+            if (is_string($this->_value)) {
                 $this->_value = $this->loadXmlFragment($this->_value);
             } elseif (!$this->isNodeOrNodeList($this->_value)) {
                 $importer     = new JsonToXml($this->_value);
                 $this->_value = $importer->getDocument()->documentElement->childNodes;
             }
+            
             $expectedAsString = $this->nodesToText($this->_value);
             $actualAsString   = $this->nodesToText($actual);
 
@@ -81,31 +93,34 @@ class XpathEquals extends Xpath
             }
 
             throw new ExpectationFailedException(
-                \trim($description . "\n" . $f->getMessage()),
+                trim($description . "\n" . $f->getMessage()),
                 $f
             );
         }
     }
 
-    private function isNodeOrNodeList($value)
+    private function isNodeOrNodeList($value): bool
     {
         return
-            ($this->_value instanceof \DOMNodeList || $this->_value instanceof \DOMNode) ||
-            (\is_array($this->_value) && isset($this->_value[0]) && $this->_value[0] instanceof \DOMNode);
+            ($value instanceof DOMNodeList || $value instanceof DOMNode) ||
+            (is_array($value) && isset($value[0]) && $value[0] instanceof DOMNode);
     }
 
     private function nodesToText($nodes)
     {
         $fragmentString = '';
-        if ($nodes instanceof \DOMNode) {
+        
+        if ($nodes instanceof DOMNode) {
             $fragmentString = $nodes->C14N();
-        } elseif ($nodes instanceof \Traversable || \is_array($nodes)) {
+        } elseif (is_iterable($nodes)) {
             $fragmentString = '';
+            
             foreach ($nodes as $node) {
                 $fragmentString .= $node->C14N();
             }
         }
-        $document               = new \DOMDocument();
+        
+        $document               = new DOMDocument();
         $document->formatOutput = true;
         $document->normalizeDocument();
         $fragment = $document->createDocumentFragment();
@@ -114,9 +129,9 @@ class XpathEquals extends Xpath
         return $document->saveXML($fragment);
     }
 
-    private function loadXmlFragment($xmlString)
+    private function loadXmlFragment($xmlString): DOMDocument
     {
-        $document = new \DOMDocument();
+        $document = new DOMDocument();
         $fragment = $document->createDocumentFragment();
         $fragment->appendXML($xmlString);
         $document->appendChild($fragment);
@@ -124,9 +139,6 @@ class XpathEquals extends Xpath
         return $document;
     }
 
-    /**
-     * @return string
-     */
     public function toString(): string
     {
         return 'is equal to nodes matched by: ' . $this->_expression;

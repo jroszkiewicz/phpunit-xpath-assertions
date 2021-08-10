@@ -7,7 +7,26 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+
 namespace PHPUnit\Xpath\Import;
+
+use DOMDocument;
+use DOMElement;
+use InvalidArgumentException;
+use stdClass;
+use function array_keys;
+use function count;
+use function get_object_vars;
+use function is_array;
+use function is_bool;
+use function is_float;
+use function is_int;
+use function is_object;
+use function is_string;
+use function json_decode;
+use function json_encode;
+use function max;
+use function range;
 
 /**
  * Import a JSON structure into DOM
@@ -31,19 +50,17 @@ class JsonToXml
 
     public function __construct($json, int $maxRecursions = 100)
     {
-        if (!(\is_array($json) || \is_object($json))) {
-            throw new \InvalidArgumentException('Invalid $json source.');
+        if (!(is_array($json) || is_object($json))) {
+            throw new InvalidArgumentException('Invalid $json source.');
         }
+        
         $this->_json          = $json;
-        $this->_maxRecursions = \max(0, $maxRecursions);
+        $this->_maxRecursions = max(0, $maxRecursions);
     }
 
-    /**
-     * @return \DOMDocument
-     */
-    public function getDocument(): \DOMDocument
+    public function getDocument(): DOMDocument
     {
-        $document = new \DOMDocument('1.0', 'UTF-8');
+        $document = new DOMDocument('1.0', 'UTF-8');
         $document->appendChild(
             $root = $document->createElement(self::DEFAULT_QNAME)
         );
@@ -59,24 +76,27 @@ class JsonToXml
      * If the current element is an object or array the method is called recursive.
      * The $recursions parameter is used to limit the recursion depth of this function.
      *
-     * @param \DOMElement $target
+     * @param DOMElement $target
      * @param mixed       $value
      * @param int         $recursions
      */
-    private function transferTo(\DOMElement $target, $value, int $recursions = 100): void
+    private function transferTo(DOMElement $target, $value, int $recursions = 100): void
     {
-        if (\is_object($value) && !($value instanceof \stdClass)) {
-            $this->transferTo($target, \json_decode(\json_encode($value)), $recursions);
+        if (is_object($value) && !($value instanceof stdClass)) {
+            $this->transferTo($target, json_decode(json_encode($value)), $recursions);
 
             return;
         }
+        
         $type = $this->getTypeFromValue($value);
         $target->setAttribute('type', $type);
         $isComplex = ($type === self::TYPE_ARRAY || $type === self::TYPE_OBJECT);
+        
         if ($isComplex) {
             if ($recursions < 1) {
                 return;
             }
+            
             if ($type === self::TYPE_ARRAY) {
                 $this->transferArrayTo($target, $value, $recursions - 1);
             } else {
@@ -85,8 +105,10 @@ class JsonToXml
 
             return;
         }
+        
         $string = $this->getValueAsString($type, $value);
-        if (\is_string($string)) {
+        
+        if (is_string($string)) {
             $target->appendChild($target->ownerDocument->createTextNode($string));
         }
     }
@@ -100,23 +122,27 @@ class JsonToXml
      */
     private function getTypeFromValue($value): string
     {
-        if (\is_array($value)) {
-            if (empty($value) || \array_keys($value) === \range(0, \count($value) - 1)) {
+        if (is_array($value)) {
+            if (empty($value) || array_keys($value) === range(0, count($value) - 1)) {
                 return self::TYPE_ARRAY;
             }
 
             return self::TYPE_OBJECT;
         }
-        if (\is_object($value)) {
+        
+        if (is_object($value)) {
             return self::TYPE_OBJECT;
         }
+        
         if (null === $value) {
             return self::TYPE_NULL;
         }
-        if (\is_bool($value)) {
+        
+        if (is_bool($value)) {
             return self::TYPE_BOOLEAN;
         }
-        if (\is_int($value) || \is_float($value)) {
+        
+        if (is_int($value) || is_float($value)) {
             return self::TYPE_NUMBER;
         }
 
@@ -163,27 +189,25 @@ class JsonToXml
     private function getValueAsString(string $type, $value): ?string
     {
         switch ($type) {
-        case self::TYPE_NULL :
-            return null;
-        case self::TYPE_BOOLEAN :
-            return $value ? 'true' : 'false';
-        default :
-            return (string) $value;
+            case self::TYPE_NULL :
+                return null;
+                
+            case self::TYPE_BOOLEAN :
+                return $value ? 'true' : 'false';
+                
+            default :
+                return (string)$value;
         }
     }
 
     /**
      * Transfer an array value into a target element node. Sets the json:type attribute to 'array' and
      * creates child element nodes for each array element using the default QName.
-     *
-     * @param \DOMElement $target
-     * @param array       $value
-     * @param int         $recursions
      */
-    private function transferArrayTo(\DOMElement $target, array $value, int $recursions): void
+    private function transferArrayTo(DOMElement $target, array $value, int $recursions): void
     {
         foreach ($value as $item) {
-            /** @var \DOMElement $child */
+            /** @var DOMElement $child */
             $child = $target->appendChild(
                 $target->ownerDocument->createElement(self::DEFAULT_QNAME)
             );
@@ -200,15 +224,16 @@ class JsonToXml
      * If the normalized NCName is different from the property name or verbose is TRUE, a json:name attribute
      * with the property name will be added.
      *
-     * @param \DOMElement $target
+     * @param DOMElement $target
      * @param mixed       $value
      * @param int         $recursions
      */
-    private function transferObjectTo(\DOMElement $target, $value, int $recursions): void
+    private function transferObjectTo(DOMElement $target, $value, int $recursions): void
     {
-        $properties = \is_array($value) ? $value : \get_object_vars($value);
+        $properties = is_array($value) ? $value : get_object_vars($value);
+        
         foreach ($properties as $property => $item) {
-            /** @var \DOMElement $child */
+            /** @var DOMElement $child */
             $tagName = $this->getQualifiedName($property, self::DEFAULT_QNAME);
             $target->appendChild(
                 $child = $target->ownerDocument->createElement($tagName)

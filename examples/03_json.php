@@ -1,10 +1,13 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Xpath\Assert;
+
 require_once __DIR__.'/../vendor/autoload.php';
 
-class MyProjectExampleTest extends \PHPUnit\Framework\TestCase
+class MyProjectExampleTest extends TestCase
 {
-    use \PHPUnit\Xpath\Assert;
+    use Assert;
 
     private const JSON = <<<JSON
 {
@@ -33,7 +36,8 @@ JSON;
     private $_jsonContext;
 
 
-    public function setUp() {
+    public function setUp(): void
+    {
         $this->_jsonContext = json_decode(self::JSON);
     }
 
